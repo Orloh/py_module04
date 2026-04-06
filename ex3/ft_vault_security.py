@@ -38,33 +38,6 @@ def secure_archive(
     except OSError as e:
         return (False, str(e))
 
-def secure_archive(file_name: str, action: str = "read", content: str = "") -> tuple[bool, str]:
-    """
-    Safely accesses a file for reading or writing using a context manager.
-    Returns a tuple indicating success (bool) and the data or error message (str).
-    """
-    try:
-        # Check if the user requested a read action
-        if action == "read" or action == "r":
-            # The 'with' statement automatically handles opening and closing!
-            with open(file_name, "r") as vault:
-                data = vault.read()
-                return (True, data)
-                
-        # Check if the user requested a write action
-        elif action == "write" or action == "w":
-            with open(file_name, "w") as vault:
-                vault.write(content)
-                return (True, "Content successfully written to file")
-                
-        # Handle unsupported actions gracefully
-        else:
-            return (False, f"Unknown action: '{action}'")
-
-    # Catch any file system errors (like missing files or permission denials)
-    except OSError as e:
-        return (False, str(e))
-
 
 def main() -> None:
     print("=== Cyber Archives Security ===")
