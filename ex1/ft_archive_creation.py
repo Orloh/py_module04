@@ -11,59 +11,66 @@
 # *************************************************************************** #
 
 
-def initialize_storage_unit(vault_name: str) -> "io.TextIOWrapper":
-    """
-    Opens a file in write mode and returns the file object.
-    Handles the intialization logging.
-    """
-    print(f"Initializing new storage unit: {vault_name}")
-    vault = open(vault_name, "w")
-    print("Storage unit created successfully...")
-    print()
-    return vault
+import sys
+import typing
 
 
-def preserve_data(vault: "io.TextIOWrapper", entries: list[str]) -> None:
-    """
-    Writes a list of data entries into the provided file object.
-    Handles the inscription logging.
-    """
-    print("Inscribing preservation data...")
-    i = 1
-    for entry in entries:
-        formatted_entry: str = f"[ENTRY {i:03d}] {entry}\n"
-        vault.write(formatted_entry)
-        print(formatted_entry.strip())
-        i += 1
+def print_data(data: str) -> None:
+    print("---")
     print()
 
+    print(data, end="")
+    if data and not data.endswith('\n'):
+        print()
 
-def seal_storage_unit(vault: "io.TextIOWrapper") -> None:
-    """
-    Safely closes the file object and logs completion.
-    """
-    vault.close()
-    print("Data inscription complete. Storage unit sealed.")
     print()
+    print("___")
 
 
 def main() -> None:
-    """
-    Main entry point for the Archive Creation protocol.
-    """
-    print("=== CYBER ARCHIVES - PRESERVATION SYSTEM ===")
-    preservation_data: list[str] = [
-        "New quantum algorithm discovered",
-        "Efficiency increased by 346%",
-        "Archived by data Archivist trainee"
-    ]
+    if len(sys.argv) != 2:
+        print("Usage: python3 ft_archive_creation.py <file>")
+        return
 
-    vault_name = "new_discovery.txt"
-    vault = initialize_storage_unit(vault_name)
-    preserve_data(vault, preservation_data)
-    seal_storage_unit(vault)
+    file_name = sys.argv[1]
 
-    print(f"Archive '{vault_name}' ready for long-term preservation")
+    print("=== Cyber Archives Recovery & Preservation ===")
+    print(f"Accessing file '{file_name}'")
+
+    try:
+        vault: typing.IO[str] = open(file_name, "r")
+        data: str = vault.read()
+        print_data(data)
+        vault.close()
+        print(f"File '{file_name}' closed.")
+        print()
+
+    except OSError as e:
+        print(f"Error opening file '{file_name}': {e}")
+        return
+
+    print("Transform data:")
+
+    transformed_lines = [line + "#" for line in data.splitlines()]
+    transformed_data = "\n".join(transformed_lines)
+
+    print(transformed_data)
+
+    new_file_name = input("Enter new file name (or empty): ")
+
+    if not new_file_name:
+        print("Not saving data.")
+    else:
+        print(f"Saving data to '{new_file_name}'")
+        try:
+            out_vault: typing.IO[str] = open(new_file_name, "w")
+
+            out_vault.write(transformed_data + "\n")
+            out_vault.close()
+
+            print(f"Data saved in file '{new_file_name}'.")
+        except OSError as e:
+            print(f"Error opening file '{new_file_name}': {e}")
 
 
 if __name__ == "__main__":

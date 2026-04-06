@@ -11,35 +11,68 @@
 # *************************************************************************** #
 
 import sys
+import typing
 
 
-def get_input(prompt: str) -> str:
-    """
-    Read from sys.stdin if data is being piped.
-    Otherwise falls back to interactive input().
-    """
-    if sys.stdin.isatty():
-        return input(prompt)
-    return sys.stdin.readline().strip()
+def print_data(data: str) -> None:
+    print("---")
+    print()
+
+    print(data, end="")
+    if data and not data.endswith('\n'):
+        print()
+
+    print()
+    print("___")
 
 
 def main() -> None:
-    print("===CYBER ARCHIVES - COMMUNICATION SYSTEM===")
-    print()
+    if len(sys.argv) != 2:
+        print("Usage: python3 ft_stream_management.py <file>")
+        return
 
-    archivist_id = get_input("Input Stream active. Enter archivist ID: ")
-    status = get_input("Input Stream active. Enter status report: ")
-    print()
+    file_name = sys.argv[1]
 
-    status_msg = f"[STANDARD] Archive status from {archivist_id}: {status}\n"
-    alert_msg = "[ALERT] System diagnostic: Communication channels verified\n"
-    complete_msg = "[STANDARD] Data transmission complete\n"
+    print("=== Cyber Archives Recovery & Preservation ===")
+    print(f"Accessing file '{file_name}'")
 
-    sys.stdout.write(status_msg)
-    sys.stderr.write(alert_msg)
-    sys.stdout.write(complete_msg)
-    print()
-    print("Three-channel communication test successful.")
+    try:
+        vault: typing.IO[str] = open(file_name, "r")
+        data: str = vault.read()
+        print_data(data)
+        vault.close()
+        print(f"File '{file_name}' closed.")
+        print()
+
+    except OSError as e:
+        print(
+            f"[STDERR] Error opening file '{file_name}': {e}", file=sys.stderr
+        )
+        return
+
+    print("Transform data:")
+    transformed_lines = [line + "#" for line in data.splitlines()]
+    transformed_data = "\n".join(transformed_lines)
+    print_data(transformed_data)
+
+    sys.stdout.write("Enter new file name (or empty): ")
+    sys.stdout.flush()
+
+    new_file_name = sys.stdin.readline().strip('\n')
+
+    if not new_file_name:
+        print("Not saving data.")
+    else:
+        print(f"Saving data to '{new_file_name}'")
+        try:
+            out_vault: typing.IO[str] = open(new_file_name, "w")
+            out_vault.write(transformed_data + "\n")
+            out_vault.close()
+            print(f"Data saved in file '{new_file_name}'.")
+
+        except OSError as e:
+            print(f"[STDERR] Error opening file '{new_file_name}': {e}", file=sys.stderr)
+            print("Data not saved.")
 
 
 if __name__ == "__main__":

@@ -10,46 +10,38 @@
 #                                                                             #
 # *************************************************************************** #
 
-def recover_vault_data(vault_name: str) -> str | None:
-    """
-    Attempts to open, read, and safely close the specified storage vault.
-    Returns the recovered text, or None if the vault is missing.
-    """
-
-    try:
-        vault = open(vault_name, "r")
-        print("Connection established...")
-        print()
-        data: str = vault.read()
-        vault.close()
-        return data
-
-    except FileNotFoundError:
-        print("ERROR: Storage vault not found. Run data generator first.")
-        return None
-
-
-def display_data(data: str) -> None:
-    """
-    Handles the presentation of the recovered archival data.
-    """
-    print("RECOVERED DATA:")
-    print(data.strip())
-    print()
+import sys
+import typing
 
 
 def main() -> None:
-    """
-    Main entry point for the Data Recovery System.
-    """
-    vault_name = "ancient_fragment.txt"
-    print("=== CYBER ARCHIVES - DATA RECOVERY SYSTEM ===")
-    print()
-    print(f"Accessing Storage Vault: {vault_name}")
-    recovered_text: str | None = recover_vault_data("ancient_fragment.txt")
-    if recovered_text:
-        display_data(recovered_text)
-        print("Data recovery complete. Storage unit disconnected.")
+    if len(sys.argv) != 2:
+        print("Usage: ft_ancient_text.py <file>")
+        return
+
+    file_name = sys.argv[1]
+
+    print("=== Cyber Archives Recovery ===")
+    print(f"Accessing file '{file_name}'")
+
+    try:
+        vault: typing.IO[str] = open(file_name, "r")
+
+        data: str = vault.read()
+
+        print("---")
+        print()
+        print(data, end="")
+        if data and not data.endswith('\n'):
+            print()
+        print()
+        print("---")
+
+        vault.close()
+        print(f"File '{file_name}' closed.")
+
+    except OSError as e:
+        print(f"Error opening file '{file_name}': {e}")
 
 
 if __name__ == "__main__":

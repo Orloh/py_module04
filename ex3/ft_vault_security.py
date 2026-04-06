@@ -11,59 +11,77 @@
 # *************************************************************************** #
 
 
-def secure_vault_ops(filename: str, messages: list[str]) -> None:
-    """
-    Securely reads a storage vault and appends classified data.
-    Aborts if vault is missing.
-    """
-    print()
-    print("Initiating secure vault access")
-    missing_newline = False
-
+def secure_archive(
+    file_name: str,
+    mode: str = "r",
+    content: str | None = None
+) -> tuple[bool, str]:
     try:
-        with open(filename, mode="r", encoding="utf-8") as file:
-            print("Vault connection established with failsafe protocols")
-            print()
-            print("SECURE EXTRACTION:")
+        if mode in ("r", "read"):
+            with open(file_name, "r") as vault:
+                data = vault.read()
+                return (True, data)
 
-            for line in file.readlines():
-                print(f"[CLASSIFIED] {line.rstrip()}")
-                missing_newline = not line.endswith("\n")
-            print()
+        elif mode in ("w", "write"):
+            if content is None:
+                return (
+                    False,
+                    "Error: Write action requested but no content provided"
+                )
+            with open(file_name, "w") as vault:
+                vault.write(content)
+                return (True, "Content successfully written to file")
 
-    except FileNotFoundError:
-        print(f"ERROR: Vault '{filename}' not found in the storage matrix.")
-        print("Operation aborted. Vault automatically sealed for safety.")
-        return
+        else:
+            return (False, f"Unknown mode '{mode}'")
 
-    with open(filename, mode="a", encoding="utf-8") as file:
-        print("SECURE PRESERVATION:")
+    except OSError as e:
+        return (False, str(e))
 
-        if missing_newline:
-            file.write("\n")
+def secure_archive(file_name: str, action: str = "read", content: str = "") -> tuple[bool, str]:
+    """
+    Safely accesses a file for reading or writing using a context manager.
+    Returns a tuple indicating success (bool) and the data or error message (str).
+    """
+    try:
+        # Check if the user requested a read action
+        if action == "read" or action == "r":
+            # The 'with' statement automatically handles opening and closing!
+            with open(file_name, "r") as vault:
+                data = vault.read()
+                return (True, data)
+                
+        # Check if the user requested a write action
+        elif action == "write" or action == "w":
+            with open(file_name, "w") as vault:
+                vault.write(content)
+                return (True, "Content successfully written to file")
+                
+        # Handle unsupported actions gracefully
+        else:
+            return (False, f"Unknown action: '{action}'")
 
-        for message in messages:
-            entry = f"[CLASSIFIED] {message}\n"
-            file.write(entry)
-            print(entry.rstrip())
-        print()
-    print("Vault automatically sealed upon completion")
-    print()
-    print("All vault operations completed with maximum security.")
+    # Catch any file system errors (like missing files or permission denials)
+    except OSError as e:
+        return (False, str(e))
 
 
 def main() -> None:
-    """
-    Main entry point for testing Vault Security protocols.
-    """
-    print("=== CYBER ARCHIVES - VAULT SECURITY SYSTEM")
+    print("=== Cyber Archives Security ===")
 
-    vault_name = "classified_data.txt"
-    messages: list[str] = [
-        "New security protocols archived"
-    ]
+    print("Using 'secure_archive' to read from a nonexistent file:")
+    print(secure_archive('/not/existing/file', 'read'))
 
-    secure_vault_ops(vault_name, messages)
+    print("Using 'secure_archive' to read from an inaccessible file:")
+    print(secure_archive('passwd', 'read'))
+
+    print("Using 'secure_archive' to read from a regular file:")
+    success, content = secure_archive('ancient_fragment.txt', 'read')
+    print((success, content))
+
+    print("Using 'secure_archive' to write previous content to a new file:")
+    content_to_write = content if success else "Fallback text"
+    print(secure_archive('new_vault.txt', 'write', content_to_write))
 
 
 if __name__ == "__main__":
