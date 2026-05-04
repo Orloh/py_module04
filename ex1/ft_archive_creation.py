@@ -24,7 +24,7 @@ def print_data(data: str) -> None:
         print()
 
     print()
-    print("___")
+    print("---")
 
 
 def main() -> None:

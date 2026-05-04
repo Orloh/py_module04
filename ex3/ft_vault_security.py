@@ -44,13 +44,16 @@ def main() -> None:
 
     print("Using 'secure_archive' to read from a nonexistent file:")
     print(secure_archive('/not/existing/file', 'read'))
+    print()
 
     print("Using 'secure_archive' to read from an inaccessible file:")
     print(secure_archive('passwd', 'read'))
+    print()
 
     print("Using 'secure_archive' to read from a regular file:")
     success, content = secure_archive('ancient_fragment.txt', 'read')
     print((success, content))
+    print()
 
     print("Using 'secure_archive' to write previous content to a new file:")
     content_to_write = content if success else "Fallback text"
