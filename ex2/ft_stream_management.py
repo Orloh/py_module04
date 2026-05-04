@@ -71,7 +71,10 @@ def main() -> None:
             print(f"Data saved in file '{new_file_name}'.")
 
         except OSError as e:
-            print(f"[STDERR] Error opening file '{new_file_name}': {e}", file=sys.stderr)
+            print(
+                f"[STDERR] Error opening file '{new_file_name}': {e}",
+                file=sys.stderr
+            )
             print("Data not saved.")
 
 
