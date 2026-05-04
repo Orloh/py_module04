@@ -54,7 +54,7 @@ def main() -> None:
     transformed_lines = [line + "#" for line in data.splitlines()]
     transformed_data = "\n".join(transformed_lines)
 
-    print(transformed_data)
+    print_data(transformed_data)
 
     new_file_name = input("Enter new file name (or empty): ")
 
